@@ -12,7 +12,9 @@ const navLinks = [
   { href: '/bansko',      bg: 'Банско',           en: 'Bansko' },
   { href: '/resort-spa',  bg: 'СПА Ризорт',       en: 'SPA Resort' },
   { href: '/gallery',     bg: 'Галерия',          en: 'Gallery' },
+  { href: '/apartment',       bg: 'Апартамент',            en: 'Apartment' },
   { href: '/admin',       bg: 'Админ',            en: 'Admin' },
+
 ]
 
 export function Navbar() {
