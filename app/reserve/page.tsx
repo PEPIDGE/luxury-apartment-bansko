@@ -484,8 +484,8 @@ function ReserveInner() {
         {/* ─── Right: Summary sidebar ─────────── */}
         <div className="md:col-span-2 space-y-5">
           {/* Booking summary */}
-          <div className="glass rounded-2xl p-5 sticky top-24">
-            <h3 className="font-semibold mb-4 text-sm">{t('Резюме на резервацията', 'Booking Summary')}</h3>
+<div className="glass rounded-2xl p-5">
+              <h3 className="font-semibold mb-4 text-sm">{t('Резюме на резервацията', 'Booking Summary')}</h3>
 
             <div className="space-y-2 text-sm mb-5">
               <div className="flex justify-between">

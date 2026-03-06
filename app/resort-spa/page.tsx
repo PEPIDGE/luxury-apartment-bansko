@@ -93,7 +93,7 @@ export default function ResortSPAPage() {
                 <span className="text-primary italic">{t('СПА Ризорт', 'SPA Resort')}</span>
               </h1>
               <p className="text-lg text-foreground/70 max-w-xl leading-relaxed mb-8">
-                {t('Над 1000 кв.м. СПА зона, внимателно обслужване и панорамна гледка към Пирин. П��изнат за най-добър СПА хотел в България 5 последователни години.',
+                {t('Над 1000 кв.м. СПА зона, внимателно обслужване и панорамна гледка към Пирин. Признат за най-добър СПА хотел в България 5 последователни години.',
                    'Over 1,000 m² of wellness, attentive service and panoramic Pirin views. Recognised as Bulgaria\'s Best SPA Hotel 5 consecutive years.')}
               </p>
               <div className="flex gap-3">

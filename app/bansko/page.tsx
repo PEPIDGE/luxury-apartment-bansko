@@ -468,40 +468,121 @@ export default function BanskoPage() {
               </p>
 
               <div className="space-y-3">
-                {SUMMER_TRAILS.map((trail, i) => (
-                  <div
-                    key={i}
-                    className="reveal activity-card rounded-2xl border border-border/40 bg-card overflow-hidden"
-                    style={{ transitionDelay: `${i * 40}ms` }}
-                  >
-                    <button
-                      onClick={() => setExpandedTrail(expandedTrail === i ? null : i)}
-                      className="w-full flex items-center justify-between px-5 py-4 hover:bg-secondary/60 transition-colors"
-                      type="button"
-                    >
-                      <div className="flex items-center gap-3">
-                        <TreePine size={16} className="text-primary shrink-0" />
-                        <span className="font-medium text-sm text-left">{trail.name}</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <span className="hidden sm:flex items-center gap-1">
-                          <Clock size={11} /> {trail.duration}
-                        </span>
-                        <span className="tabular-nums">{trail.distance}</span>
-                        <span className="font-medium text-primary">{trail.elevation}</span>
-                        <DifficultyBadge level={trail.difficulty} />
-                        {expandedTrail === i ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                      </div>
-                    </button>
+  {SUMMER_TRAILS.map((trail, i) => {
+    const open = expandedTrail === i
 
-                    {expandedTrail === i && (
-                      <div className="px-5 pb-4 pt-0 text-sm text-muted-foreground leading-relaxed border-t border-border/30">
-                        {trail.desc[lang as 'bg' | 'en'] ?? trail.desc.bg}
-                      </div>
-                    )}
-                  </div>
-                ))}
+    return (
+      <div
+        key={i}
+        className={[
+          "reveal activity-card rounded-2xl border border-border/40 bg-card overflow-hidden transition-all duration-300",
+          open ? "shadow-xl ring-1 ring-primary/25" : "hover:border-primary/25 hover:shadow-lg",
+        ].join(" ")}
+        style={{ transitionDelay: `${i * 40}ms` }}
+      >
+        <button
+          onClick={() => setExpandedTrail(open ? null : i)}
+          className={[
+            "w-full text-left px-5 py-4 transition-all duration-300",
+            "flex items-center justify-between gap-4",
+            open ? "bg-primary/5" : "hover:bg-secondary/60",
+          ].join(" ")}
+          type="button"
+          aria-expanded={open}
+        >
+          {/* Left: icon + title */}
+          <div className="flex items-center gap-3 min-w-0">
+            <div
+              className={[
+                "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                open ? "bg-primary/12" : "bg-primary/8",
+              ].join(" ")}
+            >
+              <TreePine size={18} className="text-primary" />
+            </div>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-sm md:text-[15px] truncate">
+                  {trail.name}
+                </span>
+                {open && (
+                  <span className="hidden sm:inline-flex text-[10px] tracking-widest uppercase text-primary font-semibold">
+                    {t("Маршрут", "Trail")}
+                  </span>
+                )}
               </div>
+
+              {/* Subline */}
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-background/60 px-2 py-0.5">
+                  <Clock size={11} className="text-primary/80" />
+                  {trail.duration}
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-background/60 px-2 py-0.5 tabular-nums">
+                  {trail.distance}
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-background/60 px-2 py-0.5 font-medium text-primary tabular-nums">
+                  {trail.elevation}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: difficulty + chevron */}
+          <div className="flex items-center gap-3 shrink-0">
+            <DifficultyBadge level={trail.difficulty} />
+            <div
+              className={[
+                "w-9 h-9 rounded-full border border-border/40 flex items-center justify-center transition-all duration-300",
+                open ? "bg-primary text-primary-foreground border-primary/30" : "bg-background/60",
+              ].join(" ")}
+            >
+              {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </div>
+          </div>
+        </button>
+
+        {/* Animated content */}
+        <div
+          className={[
+            "grid transition-[grid-template-rows] duration-300 ease-out",
+            open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+          ].join(" ")}
+        >
+          <div className="overflow-hidden">
+            <div className="px-5 pb-5 pt-0 border-t border-border/30">
+              <div className="pt-4 flex items-start gap-3">
+                <div className="mt-0.5 w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Mountain size={16} className="text-primary" />
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {trail.desc[lang as "bg" | "en"] ?? trail.desc.bg}
+                  </p>
+
+                  {/* Mini “tips” row (optional but looks premium) */}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="text-[11px] rounded-full border border-border/40 bg-background/60 px-3 py-1 text-muted-foreground">
+                      {t("Носете вода", "Bring water")}
+                    </span>
+                    <span className="text-[11px] rounded-full border border-border/40 bg-background/60 px-3 py-1 text-muted-foreground">
+                      {t("Проверете времето", "Check weather")}
+                    </span>
+                    <span className="text-[11px] rounded-full border border-border/40 bg-background/60 px-3 py-1 text-muted-foreground">
+                      {t("Сутрин е най-добре", "Best in the morning")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  })}
+</div>
             </section>
 
             <section>
