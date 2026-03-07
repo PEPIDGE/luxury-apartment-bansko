@@ -94,7 +94,7 @@ const SUMMER_TRAILS = [
     difficulty: 'easy',
     elevation: '+350 м',
     desc: {
-      bg: 'Кратък горски преход до живописен водопад — супер за семейства.',
+      bg: 'Кратък горски преход до живописен водопад — перфектен за семейства.',
       en: 'Short forest hike to a scenic waterfall — great for families.',
     },
   },
