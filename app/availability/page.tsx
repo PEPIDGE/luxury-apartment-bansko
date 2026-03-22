@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { useLang } from '@/components/lang-provider'
@@ -43,15 +43,8 @@ const EN_MONTHS = ['January','February','March','April','May','June','July','Aug
 const BG_DAYS = ['Пн','Вт','Ср','Чт','Пт','Сб','Нд']
 const EN_DAYS = ['Mo','Tu','We','Th','Fr','Sa','Su']
 
-// ─── iCal-ready occupied ranges ──────────────────────────────
-// These will eventually be populated from Booking.com / Airbnb iCal feeds.
-const OCCUPIED_RANGES: { start: string; end: string; source: 'booking' | 'airbnb' | 'manual' }[] = [
-  { start: '2026-01-15', end: '2026-01-22', source: 'booking' },
-  { start: '2026-02-07', end: '2026-02-14', source: 'airbnb' },
-  { start: '2026-03-01', end: '2026-03-08', source: 'booking' },
-  { start: '2026-07-10', end: '2026-07-18', source: 'airbnb' },
-  { start: '2026-08-01', end: '2026-08-10', source: 'booking' },
-]
+// ─── Occupied ranges type ────────────────────────────────────
+type OccupiedRange = { start: string; end: string; source: 'booking' | 'airbnb' | 'manual' }
 
 // ─── Dynamic nightly pricing ──────────────────────────────────
 // Prices in EUR. Adjust for real rates when connecting backend.
@@ -80,7 +73,7 @@ function calcTotalPrice(checkIn: Date, checkOut: Date): number {
   return total
 }
 
-function buildOccupiedSet(ranges: typeof OCCUPIED_RANGES): Set<string> {
+function buildOccupiedSet(ranges: OccupiedRange[]): Set<string> {
   const set = new Set<string>()
   for (const r of ranges) {
     const start = new Date(r.start)
@@ -96,12 +89,13 @@ function buildOccupiedSet(ranges: typeof OCCUPIED_RANGES): Set<string> {
 
 // ─── Calendar component ───────────────────────────────────────
 function Calendar({
-  checkIn, checkOut, onSelectDate, lang,
+  checkIn, checkOut, onSelectDate, lang, occupiedRanges,
 }: {
   checkIn: Date | null
   checkOut: Date | null
   onSelectDate: (d: Date) => void
   lang: 'bg' | 'en'
+  occupiedRanges: OccupiedRange[]
 }) {
   const today = useMemo(() => {
     const d = new Date(); d.setHours(0,0,0,0); return d
@@ -109,7 +103,7 @@ function Calendar({
   const [viewYear, setViewYear] = useState(today.getFullYear())
   const [viewMonth, setViewMonth] = useState(today.getMonth())
 
-  const occupiedSet = useMemo(() => buildOccupiedSet(OCCUPIED_RANGES), [])
+  const occupiedSet = useMemo(() => buildOccupiedSet(occupiedRanges), [occupiedRanges])
 
   const MONTHS = lang === 'bg' ? BG_MONTHS : EN_MONTHS
   const DAYS   = lang === 'bg' ? BG_DAYS   : EN_DAYS
@@ -353,6 +347,15 @@ export default function AvailabilityPage() {
   const { season } = useSeason()
   const revealRef = useScrollReveal()
 
+  const [occupiedRanges, setOccupiedRanges] = useState<OccupiedRange[]>([])
+
+  useEffect(() => {
+    fetch('/api/calendar')
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data.ranges)) setOccupiedRanges(data.ranges) })
+      .catch(() => {}) // fail silently — calendar still usable, all dates show available
+  }, [])
+
   const [step, setStep] = useState<1|2|3|4>(1)
   const [booking, setBooking] = useState({
     checkIn: null as Date | null,
@@ -448,6 +451,7 @@ export default function AvailabilityPage() {
               checkOut={booking.checkOut}
               onSelectDate={handleDateSelect}
               lang={lang}
+              occupiedRanges={occupiedRanges}
             />
 
             <ICalNotice lang={lang} />
